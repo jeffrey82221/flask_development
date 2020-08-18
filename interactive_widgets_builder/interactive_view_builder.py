@@ -4,7 +4,7 @@ from interactive_widgets_builder.role_specific_view_builder import (building_db_
                                                                     building_db_pm_html_view,
                                                                     building_db_member_html_view)
 import ipywidgets as widgets
-from ipywidgets import widgets, HBox, interactive
+from ipywidgets import widgets, HBox, VBox, interactive
 from IPython.display import clear_output
 
 
@@ -29,6 +29,7 @@ def get_selection_view(
                               description=title + ':',
                               disabled=False)
   interactive_dropdown = interactive(dropdown_recorder.func, x=dropdown)
+  output = widgets.Output()
   button = widgets.Button(
       value=False,
       description='Enter',
@@ -37,37 +38,38 @@ def get_selection_view(
       tooltip='Description',
       icon='Enter'  # (FontAwesome names without the `fa-` prefix)
   )
-  selected_role = None
 
   def on_button_clicked(b):
-    global selected_role
     if title == 'Role':
       if dropdown_recorder.selected_result == 'Admin':
-        clear_output(wait=True)
-        # print("show table infos for "+ dropdown_recorder.selected_result)
-        display(table_widget_builders['Admin']())
+        with output:
+          clear_output(wait=True)
+          display(table_widget_builders['Admin']())
       elif dropdown_recorder.selected_result == 'PM':
-        clear_output(wait=True)
-        display(get_selection_view(title='PM', options=project_list))
+        with output:
+          clear_output(wait=True)
+          display(get_selection_view(title='PM', options=project_list))
         selected_role = 'PM'
       else:
-        clear_output(wait=True)
-        display(
-            get_selection_view(title='Member', options=unique_members))
+        with output:
+          clear_output(wait=True)
+          display(
+              get_selection_view(title='Member', options=unique_members))
         selected_role = 'Member'
     else:
-      clear_output(wait=False)
-      print("showing table infos for " +
-            dropdown_recorder.selected_result)
-      display(table_widget_builders[selected_role](
-          dropdown_recorder.selected_result))
+      with output:
+        clear_output(wait=False)
+        print("showing table infos for " +
+              dropdown_recorder.selected_result)
+        display(table_widget_builders[selected_role](
+            dropdown_recorder.selected_result))
 
   button.on_click(on_button_clicked)
-  return HBox([interactive_dropdown, button])
+  return VBox([HBox([interactive_dropdown, button]), output])
 
 
-view = get_selection_view()
-view
+# view = get_selection_view()
+# view
 
 # TODO:
 # 1. [V] allow forum switching interactivity
