@@ -1,4 +1,5 @@
 from IPython.display import display
+from table_info_extractor.toy_db_info_initialize import *
 from interactive_widgets_builder.role_specific_view_builder import (building_db_admin_html_view,
                                                                     building_db_pm_html_view,
                                                                     building_db_member_html_view)
