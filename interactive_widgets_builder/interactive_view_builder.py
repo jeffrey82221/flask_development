@@ -38,8 +38,11 @@ def get_selection_view(
       tooltip='Description',
       icon='Enter'  # (FontAwesome names without the `fa-` prefix)
   )
-
+  selected_role = None 
+  # The variable selected_role is for caching the previous dropdown_recorder.selected_value
+  # so that it can be reused for the next time. 
   def on_button_clicked(b):
+    global selected_role 
     if title == 'Role':
       if dropdown_recorder.selected_result == 'Admin':
         with output:
