@@ -29,7 +29,6 @@ def get_selection_view(
                               description=title + ':',
                               disabled=False)
   interactive_dropdown = interactive(dropdown_recorder.func, x=dropdown)
-  output = widgets.Output()
   button = widgets.Button(
       value=False,
       description='Enter',
@@ -38,11 +37,27 @@ def get_selection_view(
       tooltip='Description',
       icon='Enter'  # (FontAwesome names without the `fa-` prefix)
   )
-  selected_role = None 
+  output = widgets.Output()
+
+  # Button Interaction (define as a callback)
+  selected_role = None
   # The variable selected_role is for caching the previous dropdown_recorder.selected_value
-  # so that it can be reused for the next time. 
+  # so that it can be reused for the next time.
+
   def on_button_clicked(b):
-    global selected_role 
+    # related to interaction: selected_role
+    # related to input messages:
+    #  - dropdown_recorder.selected_result
+    # related to output messages:
+    #  - output
+    #  - display
+    #  - table_widget_builders
+    #  - get_selection_view
+    #  - project_list
+    #  - unique_members
+    #  - clear_output
+    #  - print
+    global selected_role
     if title == 'Role':
       if dropdown_recorder.selected_result == 'Admin':
         with output:
