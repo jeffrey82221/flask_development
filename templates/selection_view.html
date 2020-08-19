@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<body>
+
+<div class="container">
+    <form method="post">
+        {% for title in titles %}
+        <p>
+        {{title}}:
+        <select id = '{{title}}' name = '{{title}}'>
+            {% for option in options_collection[title] %}
+            <option value="{{option}}">{{option}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Enter" >
+        </p>
+        {% endfor %}
+    </form>
+ </div>
+
+</body>
+
+</html>
