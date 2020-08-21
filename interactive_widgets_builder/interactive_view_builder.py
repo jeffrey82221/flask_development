@@ -1,11 +1,13 @@
-from IPython.display import display
-from table_info_extractor.toy_db_info_initialize import *
-from interactive_widgets_builder.role_specific_view_builder import (building_db_admin_html_view,
-                                                                    building_db_pm_html_view,
-                                                                    building_db_member_html_view)
+from IPython.display import display, clear_output
+
 import ipywidgets as widgets
-from ipywidgets import widgets, HBox, VBox, interactive
-from IPython.display import clear_output
+from ipywidgets import HBox, VBox, interactive
+
+from table_info_extractor.toy_db_info_initialize import *
+from interactive_widgets_builder.role_specific_view_builder import (
+    building_db_admin_html_view,
+    building_db_pm_html_view,
+    building_db_member_html_view)
 
 
 class __DropdownRecorder():
@@ -14,6 +16,40 @@ class __DropdownRecorder():
 
   def func(self, x):
     self.selected_result = x
+
+
+class __ButtonReactor():
+  def __init__(self, title, dropdown_recorder, output_widget, table_widget_builders):
+    self.selected_role = None
+    self.title = title
+    self.dropdown_recorder = dropdown_recorder
+    self.output_widget = output_widget
+    self.table_widget_builders = table_widget_builders
+
+  def on_button_clicked(self, b):
+    if self.title == 'Role':
+      if self.dropdown_recorder.selected_result == 'Admin':
+        with self.output_widget:
+          clear_output(wait=True)
+          display(self.table_widget_builders['Admin']())
+      elif self.dropdown_recorder.selected_result == 'PM':
+        with self.output_widget:
+          clear_output(wait=True)
+          display(get_selection_view(title='PM', options=project_list))
+        self.selected_role = 'PM'
+      else:
+        with self.output_widget:
+          clear_output(wait=True)
+          display(
+              get_selection_view(title='Member', options=unique_members))
+        self.selected_role = 'Member'
+    else:
+      with self.output_widget:
+        clear_output(wait=False)
+        print("showing table infos for " +
+              self.dropdown_recorder.selected_result)
+        display(self.table_widget_builders[self.selected_role](
+            self.dropdown_recorder.selected_result))
 
 
 def get_selection_view(
@@ -25,10 +61,17 @@ def get_selection_view(
             'Member': building_db_member_html_view
         }):
   dropdown_recorder = __DropdownRecorder()
+
   dropdown = widgets.Dropdown(options=options,
                               description=title + ':',
                               disabled=False)
-  interactive_dropdown = interactive(dropdown_recorder.func, x=dropdown)
+
+  interactive_dropdown = interactive(
+      dropdown_recorder.func,
+      x=dropdown)
+
+  output_widget = widgets.Output()
+
   button = widgets.Button(
       value=False,
       description='Enter',
@@ -37,52 +80,16 @@ def get_selection_view(
       tooltip='Description',
       icon='Enter'  # (FontAwesome names without the `fa-` prefix)
   )
-  output = widgets.Output()
 
   # Button Interaction (define as a callback)
-  selected_role = None
-  # The variable selected_role is for caching the previous dropdown_recorder.selected_value
-  # so that it can be reused for the next time.
+  button_reactor = __ButtonReactor(
+      title,
+      dropdown_recorder,
+      output_widget,
+      table_widget_builders
+  )
 
-  def on_button_clicked(b):
-    # related to interaction: selected_role
-    # related to input messages:
-    #  - dropdown_recorder.selected_result
-    # related to output messages:
-    #  - output
-    #  - display
-    #  - table_widget_builders
-    #  - get_selection_view
-    #  - project_list
-    #  - unique_members
-    #  - clear_output
-    #  - print
-    global selected_role
-    if title == 'Role':
-      if dropdown_recorder.selected_result == 'Admin':
-        with output:
-          clear_output(wait=True)
-          display(table_widget_builders['Admin']())
-      elif dropdown_recorder.selected_result == 'PM':
-        with output:
-          clear_output(wait=True)
-          display(get_selection_view(title='PM', options=project_list))
-        selected_role = 'PM'
-      else:
-        with output:
-          clear_output(wait=True)
-          display(
-              get_selection_view(title='Member', options=unique_members))
-        selected_role = 'Member'
-    else:
-      with output:
-        clear_output(wait=False)
-        print("showing table infos for " +
-              dropdown_recorder.selected_result)
-        display(table_widget_builders[selected_role](
-            dropdown_recorder.selected_result))
-
-  button.on_click(on_button_clicked)
+  button.on_click(button_reactor.on_button_clicked)
   return VBox([HBox([interactive_dropdown, button]), output])
 
 

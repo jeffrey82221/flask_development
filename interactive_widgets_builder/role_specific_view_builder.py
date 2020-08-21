@@ -1,6 +1,6 @@
 from table_info_extractor.toy_db_info_initialize import *
 from table_info_extractor.table_rander import *
-from interactive_widgets_builder.table_view_builder import build_table_widget
+from interactive_widgets_builder.table_view_builder import build_top_table_widget
 
 from ipywidgets import widgets, VBox, Label
 from ipywidgets.embed import embed_minimal_html
@@ -8,15 +8,15 @@ from ipywidgets.embed import embed_minimal_html
 
 def building_db_admin_html_view(platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
-  project_level_table_view = build_table_widget(
+  project_level_table_view = build_top_table_widget(
       current_level='project',
-      with_accordion=True,
+      with_subtable=True,
       next_level='member')
-  member_level_table_view = build_table_widget(
+  member_level_table_view = build_top_table_widget(
       current_level='member',
-      with_accordion=True,
+      with_subtable=True,
       next_level='table')
-  table_view = build_table_widget(
+  table_view = build_top_table_widget(
       current_level='table')
   tab_nest = widgets.Tab()
   tab_nest.children = [
@@ -38,18 +38,18 @@ def building_db_pm_html_view(project_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
   '''project_level_table_view = build_table_widget(
       current_level = 'project',
-      with_accordion = True,
+      with_subtable = True,
       next_level = 'member')'''
-  member_level_table_view = build_table_widget(
+  member_level_table_view = build_top_table_widget(
       current_level='member',
-      with_accordion=True,
+      with_subtable=True,
       next_level='table',
       condition=project_name,
       condition_type='project')
 
-  table_view = build_table_widget(
+  table_view = build_top_table_widget(
       current_level='table',
-      with_accordion=False,
+      with_subtable=False,
       condition=project_name,
       condition_type='project')
 
@@ -69,9 +69,9 @@ def building_db_pm_html_view(project_name, platform='jupyter'):
 
 def building_db_member_html_view(member_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
-  table_view = build_table_widget(
+  table_view = build_top_table_widget(
       current_level='table',
-      with_accordion=False,
+      with_subtable=False,
       condition=member_name,
       condition_type='member'
   )
