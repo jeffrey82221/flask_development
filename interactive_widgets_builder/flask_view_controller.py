@@ -118,8 +118,8 @@ class ViewController():
           self.ipywidget_info = self.__get_ipython_widget_embedding(
               empty=False, role='Admin')
         else:
-          print("In 2.1.2: PM or Member is the new role")
-          print("Note: In this case, the old role is always PM or Member")
+          print("In 2.1.2: PM or Member is the new role.")
+          print("Note: In this case, the old role is always PM or Member.")
           assert old_role != 'Admin'
           self.reordering_option_lists(request)
           # if old_role != 'Admin':
@@ -131,16 +131,14 @@ class ViewController():
 
       # if role is not changed
       else:
-        print("In 2.2: role is not changed")
+        print("In 2.2: Role remains unchanged.")
         self.reordering_option_lists(request)
         if new_role == 'PM':
-          print("In 2.2.1: ")
-          print("Project " + request.values['PM'] + " selected!")
+          print("In 2.2.1: Project " + request.values['PM'] + " selected.")
           self.ipywidget_info = self.__get_ipython_widget_embedding(
               empty=False, role='PM', condition=request.values['PM'])
         else:  # new_role == 'Member'
-          print("In 2.2.2: ")
-          print("Member " + request.values['Member'] + " selected!")
+          print("In 2.2.2: Member " + request.values['Member'] + " selected.")
           self.ipywidget_info = self.__get_ipython_widget_embedding(
               empty=False,
               role='Member',
