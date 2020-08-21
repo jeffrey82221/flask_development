@@ -1,8 +1,6 @@
 from ipywidgets import widgets, VBox, Label
 from ipywidgets.embed import embed_minimal_html
 
-from table_info_extractor.table_rander import *
-
 from interactive_widgets_builder.table_view_builder import build_top_table_widget
 
 
