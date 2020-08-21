@@ -146,6 +146,6 @@ def get_member_specific_table_info(target_member):
 
 
 def get_project_member_specific_table_info(target_project, target_member):
-    assert target_member in project_members_info[target_project]
-    tables = set(project_tables_info[target_project]) & set(member_tables_info[target_member])
+    assert target_member in ToyDB.project_members_info[target_project]
+    tables = set(ToyDB.project_tables_info[target_project]) & set(ToyDB.member_tables_info[target_member])
     return table_info.loc[tables]
