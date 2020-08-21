@@ -14,8 +14,8 @@ class __DropdownRecorder():
   def __init__(self):
     self.selected_result = None
 
-  def func(self, x):
-    self.selected_result = x
+  def pass_info(self, selected_dropdown):
+    self.selected_result = selected_dropdown
 
 
 class __ButtonReactor():
@@ -67,8 +67,8 @@ def get_selection_view(
                               disabled=False)
 
   interactive_dropdown = interactive(
-      dropdown_recorder.func,
-      x=dropdown)
+      dropdown_recorder.pass_info,
+      selected_dropdown=dropdown)
 
   output_widget = widgets.Output()
 
@@ -90,7 +90,7 @@ def get_selection_view(
   )
 
   button.on_click(button_reactor.on_button_clicked)
-  return VBox([HBox([interactive_dropdown, button]), output])
+  return VBox([HBox([interactive_dropdown, button]), output_widget])
 
 
 # view = get_selection_view()

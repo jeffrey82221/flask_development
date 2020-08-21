@@ -1,9 +1,11 @@
+import copy
+import json
+
+from ipywidgets.embed import embed_data
+
 from interactive_widgets_builder.role_specific_view_builder import (
     building_db_admin_html_view, building_db_pm_html_view,
     building_db_member_html_view)
-from ipywidgets.embed import embed_data
-import copy
-import json
 
 
 class ViewController():
