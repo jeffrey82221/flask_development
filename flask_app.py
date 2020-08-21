@@ -7,13 +7,13 @@
 # - [V] Using Class (ViewController) for global variables
 from jinja2 import Template
 
-from flask_ngrok import run_with_ngrok
-from flask import Flask, render_template, request
+# from flask_ngrok import run_with_ngrok
+from flask import Flask, request
 from interactive_widgets_builder.flask_view_controller import ViewController
 
 # if __name__ == 'main':
 app = Flask(__name__)
-#run_with_ngrok(app)  # starts ngrok when the app is run
+# run_with_ngrok(app)  # starts ngrok when the app is run
 
 vw_con = ViewController()
 
