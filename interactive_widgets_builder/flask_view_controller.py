@@ -4,8 +4,10 @@ import json
 from ipywidgets.embed import embed_data
 
 from interactive_widgets_builder.role_specific_view_builder import (
-    building_db_admin_html_view, building_db_pm_html_view,
-    building_db_member_html_view)
+    building_admin_view,
+    building_pm_view,
+    building_member_view)
+from table_info_extractor.toy_db_info_initialize import ToyDB
 
 
 class ViewController():
@@ -20,13 +22,13 @@ class ViewController():
     else:
       assert role == 'Admin' or role == 'PM' or role == 'Member'
       if role == 'Admin':
-        view = building_db_admin_html_view()
+        view = building_admin_view()
       elif role == 'PM':
         assert condition in self.project_list
-        view = building_db_pm_html_view(condition)
+        view = building_pm_view(condition)
       else:  # if role == 'Member':
         assert condition in self.unique_members
-        view = building_db_member_html_view(condition)
+        view = building_member_view(condition)
       data = embed_data(views=[view])
       manager_state = json.dumps(data['manager_state'])
       widget_views = [
@@ -38,14 +40,16 @@ class ViewController():
       }
 
   def __init__(self):
-    from table_info_extractor.toy_db_info_initialize import (
-        project_members_info, project_members_info, table_members_info)
+
     from itertools import chain
-    self.project_list = list(project_members_info.keys())
-    self.unique_members = list(
+    self.project_list = ToyDB.project_list  # list(ToyDB.project_members_info.keys())
+    self.unique_members = ToyDB.unique_members
+    '''
+    list(
         set(
-            chain(*(list(project_members_info.values()) +
-                    list(table_members_info.values())))))
+            chain(*(list(ToyDB.project_members_info.values()) +
+                    list(ToyDB.table_members_info.values())))))
+    '''
     self.titles = ['Role']
     self.options_collection = {'Role': ['Admin', 'PM', 'Member']}
     self.ipywidget_info = self.__get_ipython_widget_embedding(empty=True)
@@ -104,6 +108,9 @@ class ViewController():
           self.reordering_option_lists(request)
           if old_role != 'Admin':
             self._remove_second_selection_dropdown()
+          else:
+            self.ipywidget_info = self.__get_ipython_widget_embedding(
+                empty=True)
           self._add_second_selection_dropdown(new_role)
           self.ipywidget_info = self.__get_ipython_widget_embedding(
               empty=True)

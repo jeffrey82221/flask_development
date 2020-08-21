@@ -1,12 +1,12 @@
-from table_info_extractor.toy_db_info_initialize import *
-from table_info_extractor.table_rander import *
-from interactive_widgets_builder.table_view_builder import build_top_table_widget
-
 from ipywidgets import widgets, VBox, Label
 from ipywidgets.embed import embed_minimal_html
 
+from table_info_extractor.table_rander import *
 
-def building_db_admin_html_view(platform='jupyter'):
+from interactive_widgets_builder.table_view_builder import build_top_table_widget
+
+
+def building_admin_view(platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
   project_level_table_view = build_top_table_widget(
       current_level='project',
@@ -34,7 +34,7 @@ def building_db_admin_html_view(platform='jupyter'):
     return tab_nest
 
 
-def building_db_pm_html_view(project_name, platform='jupyter'):
+def building_pm_view(project_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
   '''project_level_table_view = build_table_widget(
       current_level = 'project',
@@ -67,7 +67,7 @@ def building_db_pm_html_view(project_name, platform='jupyter'):
     return VBox([Label(value="Project: " + project_name), tab_nest])
 
 
-def building_db_member_html_view(member_name, platform='jupyter'):
+def building_member_view(member_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
   table_view = build_top_table_widget(
       current_level='table',

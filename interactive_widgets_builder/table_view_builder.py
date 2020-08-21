@@ -1,6 +1,5 @@
 from ipywidgets import widgets, GridspecLayout, Layout, Box, Label, VBox
 # from ipywidgets.embed import embed_minimal_html
-from table_info_extractor.toy_db_info_initialize import *
 from table_info_extractor.table_rander import *
 
 

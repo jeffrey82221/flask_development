@@ -3,11 +3,11 @@ from IPython.display import display, clear_output
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, interactive
 
-from table_info_extractor.toy_db_info_initialize import *
+from table_info_extractor.toy_db_info_initialize import ToyDB
 from interactive_widgets_builder.role_specific_view_builder import (
-    building_db_admin_html_view,
-    building_db_pm_html_view,
-    building_db_member_html_view)
+    building_admin_view,
+    building_pm_view,
+    building_member_view)
 
 
 class __DropdownRecorder():
@@ -35,13 +35,13 @@ class __ButtonReactor():
       elif self.dropdown_recorder.selected_result == 'PM':
         with self.output_widget:
           clear_output(wait=True)
-          display(get_selection_view(title='PM', options=project_list))
+          display(build_selection_view(title='PM', options=ToyDB.project_list))
         self.selected_role = 'PM'
       else:
         with self.output_widget:
           clear_output(wait=True)
           display(
-              get_selection_view(title='Member', options=unique_members))
+              build_selection_view(title='Member', options=ToyDB.unique_members))
         self.selected_role = 'Member'
     else:
       with self.output_widget:
@@ -52,13 +52,13 @@ class __ButtonReactor():
             self.dropdown_recorder.selected_result))
 
 
-def get_selection_view(
+def build_selection_view(
         title='Role',
         options=['Admin', 'PM', 'Member'],
         table_widget_builders={
-            'Admin': building_db_admin_html_view,
-            'PM': building_db_pm_html_view,
-            'Member': building_db_member_html_view
+            'Admin': building_admin_view,
+            'PM': building_pm_view,
+            'Member': building_member_view
         }):
   dropdown_recorder = __DropdownRecorder()
 
