@@ -1,6 +1,6 @@
 from ipywidgets import widgets, GridspecLayout, Layout, Box, Label, VBox
 # from ipywidgets.embed import embed_minimal_html
-from table_info_extractor.table_rander import *
+from table_info_extractor.table_rander import TableRanderer
 
 
 def __plot_cell(description, bold=False):
@@ -47,7 +47,7 @@ def __plot_content_row(table, row_index, condition):
 
 def __plot_project_specific_accordion(project_name):
   # TODO: change condition inside to project_name
-  project_specific_table_info = get_project_specific_table_info(project_name)
+  project_specific_table_info = TableRanderer.get_project_specific_table_info(project_name)
   accordion = widgets.Accordion(children=[
       __build_table_widget(project_specific_table_info.reset_index())
   ],
@@ -61,7 +61,7 @@ def __plot_project_specific_accordion(project_name):
 
 
 def __plot_project_specific_member_level_accordion(project_name):
-  table_info_used_here = get_project_specific_member_level_table_info(
+  table_info_used_here = TableRanderer.get_project_specific_member_level_table_info(
       project_name)
   accordion = widgets.Accordion(children=[
       __build_table_widget(table_info_used_here.reset_index(),
@@ -83,10 +83,10 @@ def __plot_member_specific_accordion(member_name, project_name=None):
   # [V] change previous_condition to project_name
   # [V] change condition to member_name
   if project_name != None:
-    member_specific_table_info = get_project_member_specific_table_info(
+    member_specific_table_info = TableRanderer.get_project_member_specific_table_info(
         project_name, member_name)
   else:
-    member_specific_table_info = get_member_specific_table_info(
+    member_specific_table_info = TableRanderer.get_member_specific_table_info(
         member_name)
   accordion = widgets.Accordion(children=[
       __build_table_widget(member_specific_table_info.reset_index())
@@ -170,28 +170,28 @@ def fetch_table_info_of_current_level(current_level,
   # fetching the right table
   if current_level == 'project':
     assert condition == None and condition_type == None
-    table_info_of_current_level = project_level_table_info
+    table_info_of_current_level = TableRanderer.get_project_level_table_info()
   elif current_level == 'member':
     if condition == None:
-      table_info_of_current_level = member_level_table_info
+      table_info_of_current_level = TableRanderer.get_member_level_table_info()
     else:
       assert condition_type == 'project'
-      table_info_of_current_level = get_project_specific_member_level_table_info(
+      table_info_of_current_level = TableRanderer.get_project_specific_member_level_table_info(
           condition)
   else:
     if condition == None:
-      table_info_of_current_level = table_info
+      table_info_of_current_level = TableRanderer.get_table_info()
     else:
       if type(condition) != tuple:
         assert condition_type == 'member' or condition_type == 'project'
         if condition_type == 'member':
-          table_info_of_current_level = get_member_specific_table_info(
+          table_info_of_current_level = TableRanderer.get_member_specific_table_info(
               condition)
         else:  # condition_type == 'project'
-          table_info_of_current_level = get_project_specific_table_info(
+          table_info_of_current_level = TableRanderer.get_project_specific_table_info(
               condition)
       else:
-        table_info_of_current_level = get_project_member_specific_table_info(
+        table_info_of_current_level = TableRanderer.get_project_member_specific_table_info(
             condition[0], condition[1])
   return table_info_of_current_level
 
