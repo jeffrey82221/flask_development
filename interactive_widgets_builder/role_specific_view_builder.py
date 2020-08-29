@@ -3,8 +3,9 @@ from ipywidgets.embed import embed_minimal_html
 
 from table_info_extractor.table_rander import TableRanderer
 
-from interactive_widgets_builder.table_randerer_interface import TableOrganizer
-from interactive_widgets_builder.table_view_builder import TableViewBuilder
+from interactive_widgets_builder.table_view_builder import (
+    TableRandererOrganizer,
+    TableViewBuilder)
 
 
 class ViewFactory():
@@ -47,8 +48,9 @@ class ViewFactory():
     table_widget_list = []
     for i, key in enumerate(randerer_flow_keys):
       tvb = TableViewBuilder(
-          TableOrganizer(table_randerers=self.randerer_flows[key],
-                         level_names=self.level_names_config[key]))
+          TableRandererOrganizer(
+              table_randerers=self.randerer_flows[key],
+              level_names=self.level_names_config[key]))
       table_widget = tvb.build_table_widget(
           conditions=[condition] if condition else [])
       table_widget_list.append(table_widget)
