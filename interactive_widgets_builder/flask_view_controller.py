@@ -3,10 +3,7 @@ import json
 
 from ipywidgets.embed import embed_data
 
-from interactive_widgets_builder.role_specific_view_builder import (
-    building_admin_view,
-    building_pm_view,
-    building_member_view)
+from interactive_widgets_builder import ViewFactory
 from table_info_extractor.toy_db_info_initialize import ToyDB
 
 
@@ -22,13 +19,13 @@ class ViewController():
     else:
       assert role == 'Admin' or role == 'PM' or role == 'Member'
       if role == 'Admin':
-        view = building_admin_view()
+        view = self.view_factory.build_view('all')
       elif role == 'PM':
         assert condition in self.project_list
-        view = building_pm_view(condition)
+        view = self.view_factory.build_view('project', condition)
       else:  # if role == 'Member':
         assert condition in self.unique_members
-        view = building_member_view(condition)
+        view = self.view_factory.build_view('member', condition)
       data = embed_data(views=[view])
       manager_state = json.dumps(data['manager_state'])
       widget_views = [
@@ -44,6 +41,7 @@ class ViewController():
     from itertools import chain
     self.project_list = ToyDB.project_list  # list(ToyDB.project_members_info.keys())
     self.unique_members = ToyDB.unique_members
+    self.view_factory = ViewFactory()
     '''
     list(
         set(

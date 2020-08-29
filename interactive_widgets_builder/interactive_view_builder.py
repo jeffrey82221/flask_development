@@ -4,10 +4,7 @@ import ipywidgets as widgets
 from ipywidgets import HBox, VBox, interactive
 
 from table_info_extractor.toy_db_info_initialize import ToyDB
-from interactive_widgets_builder.role_specific_view_builder import (
-    building_admin_view,
-    building_pm_view,
-    building_member_view)
+from interactive_widgets_builder.role_specific_view_builder import ViewFactory
 
 
 class __DropdownRecorder():
@@ -52,13 +49,16 @@ class __ButtonReactor():
             self.dropdown_recorder.selected_result))
 
 
+view_factory = ViewFactory()
+
+
 def build_selection_view(
         title='Role',
         options=['Admin', 'PM', 'Member'],
         table_widget_builders={
-            'Admin': building_admin_view,
-            'PM': building_pm_view,
-            'Member': building_member_view
+            'Admin': lambda _: view_factory.build_view('all'),
+            'PM': lambda condition: view_factory.build_view('project', condition),
+            'Member': lambda condition: view_factory.build_view('member', condition)
         }):
   dropdown_recorder = __DropdownRecorder()
 
