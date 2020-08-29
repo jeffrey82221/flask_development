@@ -57,24 +57,27 @@ def building_pm_view(project_name, platform='jupyter'):
       current_level = 'project',
       with_subtable = True,
       next_level = 'member')'''
-  tvb = TableViewBuilder()
-  member_level_table_view = tvb.build_top_table_widget(
-      current_level='member',
-      with_subtable=True,
-      next_level='table',
-      condition=project_name,
-      condition_type='project')
+  tvb = TableViewBuilder(TableOrganizer(
+      table_randerers=[
+          TableRanderer.get_project_specific_member_level_table_info,
+          TableRanderer.get_project_member_specific_table_info
+      ],
+      level_names=['member', 'table']
+  ))
+  member_level_table_view = tvb.build_table_widget(conditions=[project_name])
 
-  table_view = tvb.build_top_table_widget(
-      current_level='table',
-      with_subtable=False,
-      condition=project_name,
-      condition_type='project')
+  tvb = TableViewBuilder(TableOrganizer(
+      table_randerers=[
+          TableRanderer.get_project_specific_table_info
+      ],
+      level_names=['table']
+  ))
+  table_level_view = tvb.build_table_widget(conditions=[project_name])
 
   tab_nest = widgets.Tab()
   tab_nest.children = [
       member_level_table_view,
-      table_view
+      table_level_view
   ]
   tab_nest.set_title(0, 'member-level information')
   tab_nest.set_title(1, 'table-level information')
@@ -87,20 +90,19 @@ def building_pm_view(project_name, platform='jupyter'):
 
 def building_member_view(member_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
-  tvb = TableViewBuilder()
-  table_view = tvb.build_top_table_widget(
-      current_level='table',
-      with_subtable=False,
-      condition=member_name,
-      condition_type='member'
-  )
+  tvb = TableViewBuilder(TableOrganizer(
+      table_randerers=[
+          TableRanderer.get_member_specific_table_info
+      ],
+      level_names=['table']
+  ))
+  table_level_view = tvb.build_table_widget(conditions=[member_name])
 
   tab_nest = widgets.Tab()
   tab_nest.children = [
-      table_view
+      table_level_view
   ]
-  tab_nest.set_title(0, 'member-level information')
-  tab_nest.set_title(1, 'table-level information')
+  tab_nest.set_title(0, 'table-level information')
   if platform == 'flask':
     embed_minimal_html(member_name + '.html', views=[tab_nest], title=member_name)
     return open(member_name + '.html').read()
