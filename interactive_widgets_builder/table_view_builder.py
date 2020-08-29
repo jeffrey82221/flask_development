@@ -142,7 +142,7 @@ class TableViewBuilder():
         condition = table['name'][row_index]
         # the name of the project, the member, or the table
 
-        one_row_grid = self.__plot_content_row(table, row_index, condition)
+        one_row_grid = self.__plot_content_row(table, row_index)
         grids.append(one_row_grid)
         if next_level == 'table':
           assert current_level == 'project' or current_level == 'member'
