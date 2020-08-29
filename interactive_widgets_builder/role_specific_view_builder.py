@@ -1,20 +1,21 @@
 from ipywidgets import widgets, VBox, Label
 from ipywidgets.embed import embed_minimal_html
 
-from interactive_widgets_builder.table_view_builder import build_top_table_widget
+from interactive_widgets_builder.table_view_builder import TableViewBuilder
 
 
 def building_admin_view(platform='jupyter'):
+  tvb = TableViewBuilder()
   assert platform == 'jupyter' or platform == 'flask'
-  project_level_table_view = build_top_table_widget(
+  project_level_table_view = tvb.build_top_table_widget(
       current_level='project',
       with_subtable=True,
       next_level='member')
-  member_level_table_view = build_top_table_widget(
+  member_level_table_view = tvb.build_top_table_widget(
       current_level='member',
       with_subtable=True,
       next_level='table')
-  table_view = build_top_table_widget(
+  table_view = tvb.build_top_table_widget(
       current_level='table')
   tab_nest = widgets.Tab()
   tab_nest.children = [
@@ -38,14 +39,15 @@ def building_pm_view(project_name, platform='jupyter'):
       current_level = 'project',
       with_subtable = True,
       next_level = 'member')'''
-  member_level_table_view = build_top_table_widget(
+  tvb = TableViewBuilder()
+  member_level_table_view = tvb.build_top_table_widget(
       current_level='member',
       with_subtable=True,
       next_level='table',
       condition=project_name,
       condition_type='project')
 
-  table_view = build_top_table_widget(
+  table_view = tvb.build_top_table_widget(
       current_level='table',
       with_subtable=False,
       condition=project_name,
@@ -67,7 +69,8 @@ def building_pm_view(project_name, platform='jupyter'):
 
 def building_member_view(member_name, platform='jupyter'):
   assert platform == 'jupyter' or platform == 'flask'
-  table_view = build_top_table_widget(
+  tvb = TableViewBuilder()
+  table_view = tvb.build_top_table_widget(
       current_level='table',
       with_subtable=False,
       condition=member_name,
