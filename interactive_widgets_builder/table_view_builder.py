@@ -14,11 +14,11 @@ def __plot_cell(description, bold=False):
 
 def __plot_head_columns(columns):
   '''
-This function plot the header column, which specifying the column name of
-the rest of the table rows.
-Argument:
- - columns: a list of column names.
-'''
+  This function plot the header column, which specifying the column name of
+  the rest of the table rows.
+  Argument:
+   - columns: a list of column names.
+  '''
   header = GridspecLayout(1, len(columns))
   for j, column in enumerate(columns):
     header[0, j] = __plot_cell(str(column), bold=True)
