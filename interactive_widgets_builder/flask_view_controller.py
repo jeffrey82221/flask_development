@@ -3,7 +3,7 @@ import json
 
 from ipywidgets.embed import embed_data
 
-from interactive_widgets_builder import ViewFactory
+from interactive_widgets_builder.view_factory import ViewFactory
 from table_info_extractor.toy_db_info_initialize import ToyDB
 
 

@@ -4,7 +4,7 @@ import ipywidgets as widgets
 from ipywidgets import HBox, VBox, interactive
 
 from table_info_extractor.toy_db_info_initialize import ToyDB
-from interactive_widgets_builder.role_specific_view_builder import ViewFactory
+from interactive_widgets_builder.view_factory import ViewFactory
 
 
 class __DropdownRecorder():
@@ -16,59 +16,63 @@ class __DropdownRecorder():
 
 
 class __ButtonReactor():
-  def __init__(self, title, dropdown_recorder, output_widget, table_widget_builders):
+  def __init__(self, title, dropdown_recorder, output_widget):
     self.selected_role = None
     self.title = title
     self.dropdown_recorder = dropdown_recorder
     self.output_widget = output_widget
-    self.table_widget_builders = table_widget_builders
+    self.view_factory = ViewFactory()
 
   def on_button_clicked(self, b):
     if self.title == 'Role':
       if self.dropdown_recorder.selected_result == 'Admin':
+        self.selected_role = None
         with self.output_widget:
           clear_output(wait=True)
-          display(self.table_widget_builders['Admin']())
+          display(self.view_factory.build_view('all'))
+        print(self.selected_role)
       elif self.dropdown_recorder.selected_result == 'PM':
-        with self.output_widget:
-          clear_output(wait=True)
-          display(build_selection_view(title='PM', options=ToyDB.project_list))
         self.selected_role = 'PM'
-      else:
         with self.output_widget:
           clear_output(wait=True)
           display(
-              build_selection_view(title='Member', options=ToyDB.unique_members))
+              build_selection_view(title='PM',
+                                   options=ToyDB.project_list))
+        print(self.selected_role)
+      else:
         self.selected_role = 'Member'
+        with self.output_widget:
+          clear_output(wait=True)
+          display(
+              build_selection_view(title='Member',
+                                   options=ToyDB.unique_members))
+        print(self.selected_role)
     else:
       with self.output_widget:
-        clear_output(wait=False)
-        print("showing table infos for " +
-              self.dropdown_recorder.selected_result)
-        display(self.table_widget_builders[self.selected_role](
-            self.dropdown_recorder.selected_result))
+        clear_output(wait=True)
+        if self.selected_role == 'Member':
+          print(self.selected_role)
+          display(
+              self.view_factory.build_view(
+                  'member', self.dropdown_recorder.selected_result))
+        elif self.selected_role == 'PM':
+          print(self.selected_role)
+          display(
+              self.view_factory.build_view(
+                  'project', self.dropdown_recorder.selected_result))
+        else:
+          print('no in the display branch', self.selected_role)
 
 
-view_factory = ViewFactory()
-
-
-def build_selection_view(
-        title='Role',
-        options=['Admin', 'PM', 'Member'],
-        table_widget_builders={
-            'Admin': lambda _: view_factory.build_view('all'),
-            'PM': lambda condition: view_factory.build_view('project', condition),
-            'Member': lambda condition: view_factory.build_view('member', condition)
-        }):
+def build_selection_view(title='Role', options=['Admin', 'PM', 'Member']):
   dropdown_recorder = __DropdownRecorder()
 
   dropdown = widgets.Dropdown(options=options,
                               description=title + ':',
                               disabled=False)
 
-  interactive_dropdown = interactive(
-      dropdown_recorder.pass_info,
-      selected_dropdown=dropdown)
+  interactive_dropdown = interactive(dropdown_recorder.pass_info,
+                                     selected_dropdown=dropdown)
 
   output_widget = widgets.Output()
 
@@ -82,12 +86,7 @@ def build_selection_view(
   )
 
   # Button Interaction (define as a callback)
-  button_reactor = __ButtonReactor(
-      title,
-      dropdown_recorder,
-      output_widget,
-      table_widget_builders
-  )
+  button_reactor = __ButtonReactor(title, dropdown_recorder, output_widget)
 
   button.on_click(button_reactor.on_button_clicked)
   return VBox([HBox([interactive_dropdown, button]), output_widget])
