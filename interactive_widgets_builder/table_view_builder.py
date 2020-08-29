@@ -4,8 +4,8 @@ from table_info_extractor.table_rander import TableRanderer
 
 
 class TableViewBuilder():
-  def __init__(self, table_randerer_interface=None):
-    pass
+  def __init__(self, table_randerer_organizer=None):
+    self.table_randerer_organizer = table_randerer_organizer
 
   def __plot_cell(self, description, bold=False):
     if bold:
@@ -37,7 +37,7 @@ class TableViewBuilder():
     vis = grid
     return vis
 
-  def __plot_content_row(self, table, row_index, condition):
+  def __plot_content_row(self, table, row_index):
     column_count = len(table.columns)
 
     one_row_grid = GridspecLayout(1, column_count)
