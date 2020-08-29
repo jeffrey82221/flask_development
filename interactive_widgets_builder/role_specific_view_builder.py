@@ -1,4 +1,4 @@
-from ipywidgets import widgets, VBox, Label
+from ipywidgets import widgets
 from ipywidgets.embed import embed_minimal_html
 
 from table_info_extractor.table_rander import TableRanderer
