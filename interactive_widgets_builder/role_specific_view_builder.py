@@ -42,14 +42,15 @@ class ViewFactory():
         'member': ['member']
     }
 
-  def build_view(self, view_type, condition=[], platform='jupyter'):
+  def build_view(self, view_type, condition=None, platform='jupyter'):
     randerer_flow_keys = self.mode_of_each_view_type[view_type]
     table_widget_list = []
     for i, key in enumerate(randerer_flow_keys):
       tvb = TableViewBuilder(
           TableOrganizer(table_randerers=self.randerer_flows[key],
                          level_names=self.level_names_config[key]))
-      table_widget = tvb.build_table_widget(conditions=[condition])
+      table_widget = tvb.build_table_widget(
+          conditions=[condition] if condition else [])
       table_widget_list.append(table_widget)
     tab_nest = widgets.Tab()
     tab_nest.children = table_widget_list
