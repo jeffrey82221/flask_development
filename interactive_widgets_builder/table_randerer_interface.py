@@ -1,4 +1,4 @@
-class Organizer():
+class TableOrganizer():
   def __init__(self, table_randerers, level_names):
     '''
     Argument:

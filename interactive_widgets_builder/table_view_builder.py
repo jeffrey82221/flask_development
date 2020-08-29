@@ -2,8 +2,8 @@ from ipywidgets import widgets, GridspecLayout, Layout, Box, Label, VBox
 
 
 class TableViewBuilder():
-  def __init__(self):
-    pass
+  def __init__(self, table_organizer):
+    self._table_organizer = table_organizer
 
   def __plot_cell(self, description, bold=False):
     if bold:
@@ -50,27 +50,25 @@ class TableViewBuilder():
 
   def build_table_widget(
       self,
-      table_randerers,
-      level_names,
       randerer_id=0,
       conditions=[]
   ):
     '''
-    conditions -> i.e., XXX-specific
+    conditions
     '''
     # Stopping Qiteria: no child-tables anymore
-    if randerer_id == len(table_randerers) - 1:
-      df = table_randerers[randerer_id](*conditions)
+    if randerer_id == len(self._table_organizer.table_randerers) - 1:
+      df = self._table_organizer.table_randerers[randerer_id](*conditions)
       return self.plot_non_expandable_table(df.reset_index())
     # Recursion Qiteria: continue to build sub-tables
     else:
       # setup artistic properties:
-      if randerer_id != len(table_randerers) - 2:
+      if randerer_id != len(self._table_organizer.table_randerers) - 2:
         sub_table_widget_width = '99.5%'
       else:
         sub_table_widget_width = '75.5%'
       # get dataframe properties:
-      table_randerer = table_randerers[randerer_id]
+      table_randerer = self._table_organizer.table_randerers[randerer_id]
       df = table_randerer(*conditions)
       # build header:
       header = self.__plot_head_columns(df.reset_index())
@@ -85,8 +83,6 @@ class TableViewBuilder():
         sub_table_widget = widgets.Accordion(
             children=[
                 self.build_table_widget(
-                    table_randerers,
-                    level_names,
                     randerer_id=randerer_id + 1,
                     conditions=conditions_of_next_level
                 )
@@ -98,9 +94,9 @@ class TableViewBuilder():
                 width=sub_table_widget_width)
         )
         sub_table_widget.set_title(0, 'show info of {level_name}s: '.format(
-            level_name=level_names[randerer_id + 1]
+            level_name=self._table_organizer.level_names[randerer_id + 1]
         ) + ", ".join(list(
-            table_randerers[randerer_id + 1](*conditions_of_next_level).index
+            self._table_organizer.table_randerers[randerer_id + 1](*conditions_of_next_level).index
         )))
         grids.append(sub_table_widget)
       return VBox([header, VBox(grids)])
