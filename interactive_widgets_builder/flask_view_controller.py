@@ -1,10 +1,34 @@
 import copy
 import json
 
+from jinja2 import Template
+
 from ipywidgets.embed import embed_data
 
 from interactive_widgets_builder.view_factory import ViewFactory
 from table_info_extractor.toy_db_info_initialize import ToyDB
+
+
+class FrontEndParameterHolder():
+  def __init__(self):
+    self.titles = None
+    self.options_collection = None
+    self.ipywidget_info = None
+
+  def set_parameters(self, titles, options_collection, ipywidget_info):
+    self.titles = titles
+    self.options_collection = options_collection
+    self.ipywidget_info = ipywidget_info
+
+  def render_template(self):
+    html_name = "selection_view.html"
+    template = Template(open('templates/' + html_name).read())
+    rendered_template = template.render(
+        titles=self.titles,
+        options_collection=self.options_collection,
+        ipywidget_info=self.ipywidget_info
+    )
+    return rendered_template
 
 
 class ViewController():
@@ -31,12 +55,8 @@ class ViewController():
         'Member': ToyDB.unique_members
     }
     self.view_factory = ViewFactory()
-    self.titles = ['Role']
     self.entry_dropdown_title = 'Role'
-    self.options_collection = {
-        'Role': self._options_for_each_dropdown_titles[self.entry_dropdown_title]
-    }
-    self.ipywidget_info = self._bridge_ipywidget_to_front_parameters()
+    self.fep_holder = FrontEndParameterHolder()
 
   def _get_reordered_option_list(self, dropdown_title, selected_result):
     import copy
@@ -45,55 +65,76 @@ class ViewController():
     options.remove(selected_result)
     return [selected_result] + options
 
+  def entry(self):
+    self.fep_holder.set_parameters(
+        titles=[self.entry_dropdown_title],
+        options_collection={
+            'Role': self._options_for_each_dropdown_titles[self.entry_dropdown_title]
+        },
+        ipywidget_info=self._bridge_ipywidget_to_front_parameters(None)
+    )
+
   def response_by_altering_view(self, request):
     import copy
     # clear_output(wait=True)
     if 'Role' in request.values.keys():
       if request.values['Role'] == 'PM':
-        self.options_collection = {
-            'Role': self._get_reordered_option_list('Role', 'PM'),
-            'PM': self._options_for_each_dropdown_titles['PM']
-        }
-        self.titles = ['Role', 'PM']
-        widget = None
+        self.fep_holder.set_parameters(
+            titles=['Role', 'PM'],
+            options_collection={
+                'Role': self._get_reordered_option_list('Role', 'PM'),
+                'PM': self._options_for_each_dropdown_titles['PM']
+            },
+            ipywidget_info=self._bridge_ipywidget_to_front_parameters(None)
+        )
       elif request.values['Role'] == 'Member':
-        self.options_collection = {
-            'Role': self._get_reordered_option_list('Role', 'Member'),
-            'Member': self._options_for_each_dropdown_titles['Member']
-        }
-        self.titles = ['Role', 'Member']
-        widget = None
+        self.fep_holder.set_parameters(
+            titles=['Role', 'Member'],
+            options_collection={
+                'Role': self._get_reordered_option_list('Role', 'Member'),
+                'Member': self._options_for_each_dropdown_titles['Member']
+            },
+            ipywidget_info=self._bridge_ipywidget_to_front_parameters(None)
+        )
       else:  # Role: Admin
-        self.options_collection = {
-            'Role': self._get_reordered_option_list('Role', 'Admin')
-        }
-        self.titles = ['Role']
-        widget = self.view_factory.build_view('all')
-
+        self.fep_holder.set_parameters(
+            titles=['Role'],
+            options_collection={
+                'Role': self._get_reordered_option_list('Role', 'Admin')
+            },
+            ipywidget_info=self._bridge_ipywidget_to_front_parameters(
+                self.view_factory.build_view('all')
+            )
+        )
     else:
       if 'PM' in request.values.keys():
         selected_project = request.values['PM']
-        self.options_collection = {
-            'Role': self._get_reordered_option_list('Role', 'PM'),
-            'PM': self._get_reordered_option_list('PM', selected_project)
-        }
-        self.titles = ['Role', 'PM']
-        widget = self.view_factory.build_view('project', selected_project)
+        self.fep_holder.set_parameters(
+            titles=['Role', 'PM'],
+            options_collection={
+                'Role': self._get_reordered_option_list('Role', 'PM'),
+                'PM': self._get_reordered_option_list('PM', selected_project)
+            },
+            ipywidget_info=self._bridge_ipywidget_to_front_parameters(
+                self.view_factory.build_view('project', selected_project)
+            )
+        )
         # print("Show PM Table View for", project)
 
       elif 'Member' in request.values.keys():
         selected_member = request.values['Member']
-        self.options_collection = {
-            'Role': self._get_reordered_option_list('Role', 'Member'),
-            'Member': self._get_reordered_option_list('Member', selected_member)
-        }
-        self.titles = ['Role', 'Member']
-        widget = self.view_factory.build_view('member', selected_member)
+        self.fep_holder.set_parameters(
+            titles=['Role', 'Member'],
+            options_collection={
+                'Role': self._get_reordered_option_list('Role', 'Member'),
+                'Member': self._get_reordered_option_list('Member', selected_member)
+            },
+            ipywidget_info=self._bridge_ipywidget_to_front_parameters(
+                self.view_factory.build_view('member', selected_member)
+            )
+        )
       else:
         print("Error: no such selection...")
-    self.ipywidget_info = self._bridge_ipywidget_to_front_parameters(
-        widget
-    )
 
 
 '''
