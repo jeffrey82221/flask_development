@@ -48,11 +48,6 @@ class TableViewBuilder():
     vis = grid
     return vis
 
-  def plot_non_expandable_table(self, table):
-    header = self.__plot_head_columns(table)
-    content = self.__plot_non_expandable_table_content(table)
-    return VBox([header, content])
-
   def __plot_content_row(self, table, row_index):
     column_count = len(table.columns)
 
@@ -60,6 +55,11 @@ class TableViewBuilder():
     for j, column in enumerate(table.columns):
       one_row_grid[0, j] = self.__plot_cell(str(table[column][row_index]))
     return one_row_grid
+
+  def plot_non_expandable_table(self, table):
+    header = self.__plot_head_columns(table)
+    content = self.__plot_non_expandable_table_content(table)
+    return VBox([header, content])
 
   def build_table_widget(
       self,

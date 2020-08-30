@@ -26,27 +26,27 @@ class __ButtonReactor():
   def on_button_clicked(self, b):
     if self.title == 'Role':
       if self.dropdown_recorder.selected_result == 'Admin':
-        self.selected_role = None
         with self.output_widget:
           clear_output(wait=True)
           display(self.view_factory.build_view('all'))
-        print(self.selected_role)
+          self.selected_role = None
+          print(self.selected_role)
       elif self.dropdown_recorder.selected_result == 'PM':
-        self.selected_role = 'PM'
         with self.output_widget:
           clear_output(wait=True)
           display(
               build_selection_view(title='PM',
                                    options=ToyDB.project_list))
-        print(self.selected_role)
+          self.selected_role = 'PM'
+          print(self.selected_role)
       else:
-        self.selected_role = 'Member'
         with self.output_widget:
           clear_output(wait=True)
           display(
               build_selection_view(title='Member',
                                    options=ToyDB.unique_members))
-        print(self.selected_role)
+          self.selected_role = 'Member'
+          print(self.selected_role)
     else:
       with self.output_widget:
         clear_output(wait=True)
@@ -61,7 +61,7 @@ class __ButtonReactor():
               self.view_factory.build_view(
                   'project', self.dropdown_recorder.selected_result))
         else:
-          print('no in the display branch', self.selected_role)
+          print('not in the display branch', self.selected_role)
 
 
 def build_selection_view(title='Role', options=['Admin', 'PM', 'Member']):
@@ -87,6 +87,7 @@ def build_selection_view(title='Role', options=['Admin', 'PM', 'Member']):
 
   # Button Interaction (define as a callback)
   button_reactor = __ButtonReactor(title, dropdown_recorder, output_widget)
+  # Issue: parameters in button_reactor may be frozen as
 
   button.on_click(button_reactor.on_button_clicked)
   return VBox([HBox([interactive_dropdown, button]), output_widget])

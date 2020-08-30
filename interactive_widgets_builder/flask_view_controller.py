@@ -42,12 +42,6 @@ class ViewController():
     self.project_list = ToyDB.project_list  # list(ToyDB.project_members_info.keys())
     self.unique_members = ToyDB.unique_members
     self.view_factory = ViewFactory()
-    '''
-    list(
-        set(
-            chain(*(list(ToyDB.project_members_info.values()) +
-                    list(ToyDB.table_members_info.values())))))
-    '''
     self.titles = ['Role']
     self.options_collection = {'Role': ['Admin', 'PM', 'Member']}
     self.ipywidget_info = self.__get_ipython_widget_embedding(empty=True)
