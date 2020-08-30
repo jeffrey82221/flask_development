@@ -9,23 +9,10 @@ from table_info_extractor.toy_db_info_initialize import ToyDB
 
 class ViewController():
   # template ipython widget embedding
-  def __get_ipython_widget_embedding(self,
-                                     empty=False,
-                                     role='Admin',
-                                     condition=None):
-
-    if empty == True:
+  def _bridge_ipywidget_to_front_parameters(self, view=None):
+    if view == None:
       return {'manager_state': None, 'widget_views': [None]}
     else:
-      assert role == 'Admin' or role == 'PM' or role == 'Member'
-      if role == 'Admin':
-        view = self.view_factory.build_view('all')
-      elif role == 'PM':
-        assert condition in self.project_list
-        view = self.view_factory.build_view('project', condition)
-      else:  # if role == 'Member':
-        assert condition in self.unique_members
-        view = self.view_factory.build_view('member', condition)
       data = embed_data(views=[view])
       manager_state = json.dumps(data['manager_state'])
       widget_views = [
@@ -37,38 +24,79 @@ class ViewController():
       }
 
   def __init__(self):
-
-    from itertools import chain
-    self.project_list = ToyDB.project_list  # list(ToyDB.project_members_info.keys())
-    self.unique_members = ToyDB.unique_members
+    self.dropdown_titles = ['Role', 'PM', 'Member']
+    self._options_for_each_dropdown_titles = {
+        'Role': ['Admin', 'PM', 'Member'],
+        'PM': ToyDB.project_list,
+        'Member': ToyDB.unique_members
+    }
     self.view_factory = ViewFactory()
     self.titles = ['Role']
-    self.options_collection = {'Role': ['Admin', 'PM', 'Member']}
-    self.ipywidget_info = self.__get_ipython_widget_embedding(empty=True)
+    self.entry_dropdown_title = 'Role'
+    self.options_collection = {
+        'Role': self._options_for_each_dropdown_titles[self.entry_dropdown_title]
+    }
+    self.ipywidget_info = self._bridge_ipywidget_to_front_parameters()
 
-  def reordering_option_lists(self, request):
-    # aka. moving the selected option to the front
-    for title in self.titles:
-      selected_value = request.values[title]
-      self.options_collection[title].remove(selected_value)
-      self.options_collection[title] = [
-          selected_value
-      ] + self.options_collection[title]
+  def _get_reordered_option_list(self, dropdown_title, selected_result):
+    import copy
+    options = copy.copy(
+        self._options_for_each_dropdown_titles[dropdown_title])
+    options.remove(selected_result)
+    return [selected_result] + options
 
-  def _remove_second_selection_dropdown(self):
-    del self.options_collection[self.titles[-1]]
-    self.titles.pop()
+  def response_by_altering_view(self, request):
+    import copy
+    # clear_output(wait=True)
+    if 'Role' in request.values.keys():
+      if request.values['Role'] == 'PM':
+        self.options_collection = {
+            'Role': self._get_reordered_option_list('Role', 'PM'),
+            'PM': self._options_for_each_dropdown_titles['PM']
+        }
+        self.titles = ['Role', 'PM']
+        widget = None
+      elif request.values['Role'] == 'Member':
+        self.options_collection = {
+            'Role': self._get_reordered_option_list('Role', 'Member'),
+            'Member': self._options_for_each_dropdown_titles['Member']
+        }
+        self.titles = ['Role', 'Member']
+        widget = None
+      else:  # Role: Admin
+        self.options_collection = {
+            'Role': self._get_reordered_option_list('Role', 'Admin')
+        }
+        self.titles = ['Role']
+        widget = self.view_factory.build_view('all')
 
-  def _add_second_selection_dropdown(self, role):
-    assert len(self.titles) == 1 and self.titles[0] == 'Role'
-    assert role == 'PM' or role == 'Member'
-    if role == 'PM':
-      self.titles.append('PM')
-      self.options_collection['PM'] = copy.copy(self.project_list)
-    else:  # role == 'Member'
-      self.titles.append('Member')
-      self.options_collection['Member'] = copy.copy(self.unique_members)
+    else:
+      if 'PM' in request.values.keys():
+        selected_project = request.values['PM']
+        self.options_collection = {
+            'Role': self._get_reordered_option_list('Role', 'PM'),
+            'PM': self._get_reordered_option_list('PM', selected_project)
+        }
+        self.titles = ['Role', 'PM']
+        widget = self.view_factory.build_view('project', selected_project)
+        # print("Show PM Table View for", project)
 
+      elif 'Member' in request.values.keys():
+        selected_member = request.values['Member']
+        self.options_collection = {
+            'Role': self._get_reordered_option_list('Role', 'Member'),
+            'Member': self._get_reordered_option_list('Member', selected_member)
+        }
+        self.titles = ['Role', 'Member']
+        widget = self.view_factory.build_view('member', selected_member)
+      else:
+        print("Error: no such selection...")
+    self.ipywidget_info = self._bridge_ipywidget_to_front_parameters(
+        widget
+    )
+
+
+'''
   def response_by_altering_view(self, request):
     # if there is only the role selection view
     print("Request:")
@@ -135,3 +163,4 @@ class ViewController():
               empty=False,
               role='Member',
               condition=request.values['Member'])
+'''

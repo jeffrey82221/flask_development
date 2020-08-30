@@ -27,8 +27,9 @@
 <body>
 
 <div class="container">
-    <form method="post">
-        {% for title in titles %}
+
+    {% for title in titles %}
+      <form method="post">
         <p>
         {{title}}:
         <select id = '{{title}}' name = '{{title}}'>
@@ -38,8 +39,9 @@
         </select>
         <input type="submit" value="Enter" >
         </p>
-        {% endfor %}
-    </form>
+      </form>
+    {% endfor %}
+
 </div>
  <div id="ipython-widget">
       <!-- This script tag will be replaced by the view's DOM tree -->

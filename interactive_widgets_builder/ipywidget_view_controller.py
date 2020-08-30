@@ -40,11 +40,11 @@ class SelectionView():
     selected_result = self._interactive_dropdown.get_selected_result()
     values = {}
     values[self._title] = selected_result
-    ViewController.response_by_altering_view(Request(
+    self.response_by_altering_view(Request(
         values
     ))
 
-  def __init__(self, title, options):
+  def __init__(self, title, options, response_by_altering_view):
     self._title = title
     self._interactive_dropdown = _InteractiveDropdown(title, options)
     self._button = widgets.Button(
@@ -56,13 +56,14 @@ class SelectionView():
         icon='Enter'
     )
     self._button.on_click(self._submit)
+    self.response_by_altering_view = response_by_altering_view
 
   def get_widget(self):
     return HBox([self._interactive_dropdown.get_widget(), self._button])
 
 
 class ViewController():
-  def __init__():
+  def __init__(self):
     self.dropdown_titles = ['Role', 'PM', 'Member']
     self._options_for_each_dropdown_titles = {
         'Role': ['Admin', 'PM', 'Member'],
@@ -75,7 +76,8 @@ class ViewController():
   def entry(self):
     sv = SelectionView(
         self.entry_dropdown_title,
-        self._options_for_each_dropdown_titles[self.entry_dropdown_title]
+        self._options_for_each_dropdown_titles[self.entry_dropdown_title],
+        self.response_by_altering_view
     )
     widget = sv.get_widget()
     return widget
@@ -93,11 +95,13 @@ class ViewController():
       if request.values['Role'] == 'PM':
         sv1 = SelectionView(
             'Role',
-            self._get_reordered_option_list('Role', 'PM')
+            self._get_reordered_option_list('Role', 'PM'),
+            self.response_by_altering_view
         )
         sv2 = SelectionView(
             'PM',
-            self._options_for_each_dropdown_titles['PM']
+            self._options_for_each_dropdown_titles['PM'],
+            self.response_by_altering_view
         )
         widget = VBox([
             sv1.get_widget(),
@@ -105,11 +109,13 @@ class ViewController():
       elif request.values['Role'] == 'Member':
         sv1 = SelectionView(
             'Role',
-            self._get_reordered_option_list('Role', 'Member')
+            self._get_reordered_option_list('Role', 'Member'),
+            self.response_by_altering_view
         )
         sv2 = SelectionView(
             'Member',
-            self._options_for_each_dropdown_titles['Member']
+            self._options_for_each_dropdown_titles['Member'],
+            self.response_by_altering_view
         )
         widget = VBox([
             sv1.get_widget(),
@@ -118,7 +124,8 @@ class ViewController():
       else:  # Role: Admin
         sv = SelectionView(
             'Role',
-            self._options_for_each_dropdown_titles['Role']
+            self._options_for_each_dropdown_titles['Role'],
+            self.response_by_altering_view
         )
         widget = VBox([
             sv.get_widget(),
@@ -131,11 +138,13 @@ class ViewController():
         selected_project = request.values['PM']
         sv1 = SelectionView(
             'Role',
-            self._get_reordered_option_list('Role', 'PM')
+            self._get_reordered_option_list('Role', 'PM'),
+            self.response_by_altering_view
         )
         sv2 = SelectionView(
             'PM',
-            self._get_reordered_option_list('PM', selected_project)
+            self._get_reordered_option_list('PM', selected_project),
+            self.response_by_altering_view
         )
         widget = VBox([
             sv1.get_widget(),
@@ -148,11 +157,13 @@ class ViewController():
         selected_member = request.values['Member']
         sv1 = SelectionView(
             'Role',
-            self._get_reordered_option_list('Role', 'Member')
+            self._get_reordered_option_list('Role', 'Member'),
+            self.response_by_altering_view
         )
         sv2 = SelectionView(
             'Member',
-            self._get_reordered_option_list('Member', selected_member)
+            self._get_reordered_option_list('Member', selected_member),
+            self.response_by_altering_view
         )
         widget = VBox([
             sv1.get_widget(),
